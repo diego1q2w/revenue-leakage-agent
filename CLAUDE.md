@@ -33,10 +33,13 @@ the purpose — see the hard constraints below.
    `rollback_action`. Do not add a 9th tool — enrich existing tools instead
    (e.g. credit memos are embedded in `query_invoices` results).
 
-4. **Propose → apply flow** — `propose_*` tools only create drafts in
-   `sandbox/proposals.json`. `apply_action` is the only tool that writes
-   ledgers, and it is gated. The model should call `apply_action` immediately
-   after propose; the gate asks the human.
+4. **Investigate → propose → apply flow** — an investigation turn reports
+   findings and asks whether to draft a fix; it must not call `propose_*`.
+   Only once the user asks for the fix does the model call `propose_*` (which
+   just drafts into `sandbox/proposals.json`) followed immediately by
+   `apply_action`, which is the only tool that writes ledgers and is gated.
+   Two confirmations, two purposes: the prose question authorizes proposing,
+   the gate authorizes the write.
 
 5. **Read-only `/data`** — never mutate files under `data/`. All writes go to
    `sandbox/`.

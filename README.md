@@ -18,12 +18,13 @@ things are worth reading:
   LangGraph `interrupt()` before any write executes. A jailbroken or confused
   model physically cannot write to the ledger without a human resume.
 
-![The agent finding a missing September invoice on plan C-1001, proposing a make-good invoice, and applying it after the user types "yes, apply it"](docs/demo.gif)
+![The agent investigating plan C-1001, reporting a missing September invoice, drafting a make-good invoice on request, applying it after the user types "yes, apply it", and rolling it back](docs/demo.gif)
 
-*Unedited capture of a live run: the agent investigates C-1001, finds September
-2025 was never invoiced, proposes a make-good invoice, and parks at the write
-gate until the user types `yes, apply it` — at which point `INV-MG-001` lands in
-the sandbox ledger and the audit log.*
+*Unedited capture of a live run. The agent investigates C-1001 and reports that
+September 2025 was never invoiced — findings only, no action taken. Asked to fix
+it, it drafts a make-good invoice and parks at the write gate; `yes, apply it`
+writes `INV-MG-001` to the sandbox ledger. A change of heart rolls it back, and
+both events land in the audit log.*
 
 ## Stack
 
@@ -174,8 +175,10 @@ else discards the proposal and loops back to the agent for a reply.
 | *"Was invoice I-9123 billed correctly?"* | EUR→USD FX overbilling; existing credit memo M-300 |
 | *"What currency is that plan in?"* (follow-up) | Checkpointer restores context, no tool calls |
 
-Reply `yes, apply it` to a proposal to write it to the sandbox. Inspect with
-`curl http://localhost:8000/api/sandbox`, undo with `make reset-sandbox`.
+Investigation turns report findings only. Ask for the fix ("yes, please fix it")
+to get a proposal, then reply `yes, apply it` to pass the write gate. Ask the
+agent to revert and it rolls the action back. Inspect the result with
+`curl http://localhost:8000/api/sandbox`, or wipe it with `make reset-sandbox`.
 
 ## Tests
 

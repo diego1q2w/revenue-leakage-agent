@@ -170,11 +170,12 @@ def propose_make_good_invoice(plan_id: str, amount: float, reason: str) -> dict[
     plan's contracted amount. This only creates a proposal draft — nothing is
     written to the sandbox.
 
-    When NOT to call: informational follow-ups ("what currency?", "explain
-    that"), or any turn where you are not actively offering a corrective fix
-    after investigation. On those turns, answer in plain text from context.
+    When NOT to call: the investigation turn itself. Reporting a discrepancy
+    and drafting its fix are separate turns — describe what you found, ask
+    whether to draft the fix, and only call this once the user says yes. Also
+    never on informational follow-ups ("what currency?", "explain that").
 
-    When ready to offer a fix, call this and immediately follow with
+    Once the user has asked for the fix, call this and immediately follow with
     apply_action using the returned proposal_id — applying surfaces the
     confirmation question to the user; nothing is written until they approve.
 
@@ -209,10 +210,11 @@ def propose_credit_memo(invoice_id: str, amount: float, reason: str) -> dict[str
     error, duplicate billing, or a currency mismatch that inflated the amount.
     This only creates a proposal draft.
 
-    When NOT to call: informational follow-ups or turns where you are only
-    answering questions about data already in the thread.
+    When NOT to call: the investigation turn itself — report the overbilling
+    and ask whether to draft the credit memo first. Also never on informational
+    follow-ups about data already in the thread.
 
-    When ready to offer a fix, call this and immediately follow with
+    Once the user has asked for the fix, call this and immediately follow with
     apply_action using the returned proposal_id — the user is asked to confirm
     there before anything is written.
 
@@ -252,10 +254,11 @@ def propose_plan_amendment(
     plan no longer reflects the real agreement (e.g. an amendment exists on
     paper but not in the billing system).
 
-    When NOT to call: informational follow-ups or when the user is only asking
-    about plan details already loaded in this thread.
+    When NOT to call: the investigation turn itself — describe the mismatch and
+    ask whether to draft the amendment first. Also never when the user is only
+    asking about plan details already loaded in this thread.
 
-    When ready to offer an amendment, call this and immediately follow with
+    Once the user has asked for the amendment, call this and immediately follow with
     apply_action using the returned proposal_id.
 
     Examples:
@@ -287,9 +290,10 @@ def apply_action(proposal_id: str) -> dict[str, Any]:
     """Apply a proposed action to the writable sandbox — the human approval
     gate lives inside this tool.
 
-    Call ONLY immediately after a propose_* tool in the same turn where you are
-    offering a corrective action. Do NOT call on informational follow-ups
-    (e.g. "what currency is that plan?") — answer those in plain text from
+    Call ONLY immediately after a propose_* tool, in a turn where the user has
+    asked you to carry out the fix. Do NOT call on the investigation turn that
+    merely reports a discrepancy, and not on informational follow-ups (e.g.
+    "what currency is that plan?") — those are answered in plain text from
     conversation context with zero write-path tool calls.
 
     Calling apply_action does NOT write anything by itself: execution pauses,

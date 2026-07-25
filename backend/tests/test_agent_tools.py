@@ -1,6 +1,7 @@
-"""Agent layer tests — to be implemented alongside the tools/graph."""
+"""Agent layer tests — tool surface, turn discipline, and the write gate."""
 
 import asyncio
+import json
 
 import pytest
 from langchain_core.messages import AIMessage, HumanMessage
@@ -24,6 +25,11 @@ EXPECTED_TOOLS = {
 def test_tool_surface_is_the_expected_eight():
     """Exactly the eight designed tools are registered — no more, no fewer."""
     assert {t.name for t in ALL_TOOLS} == EXPECTED_TOOLS
+
+
+def _ledger_rows(path) -> list:
+    """Ledger contents, treating a not-yet-created file as empty."""
+    return json.loads(path.read_text()) if path.exists() else []
 
 
 def _last_assistant_text(messages) -> str:
@@ -82,6 +88,49 @@ def test_agent_answers_currency_followup_without_proposing():
     assert result["type"] == "message"
     assert "usd" in result["text"].lower()
     assert "would you like me to apply" not in result["text"].lower()
+
+
+@pytest.mark.integration
+def test_investigation_turn_reports_without_proposing(tmp_sandbox):
+    """Finding leakage and drafting its fix are separate turns.
+
+    The opening question must come back as prose findings, not as a parked
+    approval_request — the user decides whether to act on them.
+    """
+    settings = get_settings()
+    if not settings.anthropic_api_key:
+        pytest.skip("ANTHROPIC_API_KEY not set")
+
+    async def run() -> dict:
+        service = AgentService(settings)
+        return await service.chat(
+            "test-investigate-only", "Any revenue leakage issues with plan C-1001?"
+        )
+
+    result = asyncio.run(run())
+    assert result["type"] == "message", "investigation turn must not park at the gate"
+    assert "proposal" not in result
+    # Nothing drafted, nothing written.
+    assert _ledger_rows(tmp_sandbox / "proposals.json") == []
+
+
+@pytest.mark.integration
+def test_fix_request_turn_parks_at_the_write_gate(tmp_sandbox):
+    """Asking for the fix is what produces the proposal and the approval card."""
+    settings = get_settings()
+    if not settings.anthropic_api_key:
+        pytest.skip("ANTHROPIC_API_KEY not set")
+
+    async def run() -> dict:
+        service = AgentService(settings)
+        await service.chat("test-fix-request", "Any revenue leakage issues with plan C-1001?")
+        return await service.chat("test-fix-request", "Yes, please fix it.")
+
+    result = asyncio.run(run())
+    assert result["type"] == "approval_request"
+    assert result["proposal"]["action_type"] == "make_good_invoice"
+    # Still a draft — the gate has not been passed.
+    assert _ledger_rows(tmp_sandbox / "invoices.json") == []
 
 
 @pytest.mark.integration
