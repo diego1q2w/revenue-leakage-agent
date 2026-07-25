@@ -18,11 +18,12 @@ things are worth reading:
   LangGraph `interrupt()` before any write executes. A jailbroken or confused
   model physically cannot write to the ledger without a human resume.
 
-<!-- Screenshot: run `NEXT_PUBLIC_MOCK=true npm run dev` in frontend/, send three
-     messages to get bubble → proposal card → bubble, save the capture as
-     docs/screenshot.png, then uncomment the line below.
-![Chat UI showing an investigation and an approval request](docs/screenshot.png)
--->
+![The agent finding a missing September invoice on plan C-1001, proposing a make-good invoice, and applying it after the user types "yes, apply it"](docs/demo.gif)
+
+*Unedited capture of a live run: the agent investigates C-1001, finds September
+2025 was never invoiced, proposes a make-good invoice, and parks at the write
+gate until the user types `yes, apply it` — at which point `INV-MG-001` lands in
+the sandbox ledger and the audit log.*
 
 ## Stack
 
