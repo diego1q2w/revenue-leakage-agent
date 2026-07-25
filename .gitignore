@@ -1,0 +1,25 @@
+# Python
+venv/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Env
+.env
+.env.local
+
+# Node / Next.js
+frontend/node_modules/
+frontend/.next/
+frontend/next-env.d.ts
+
+# Sandbox runtime state (directory is tracked, contents are not)
+sandbox/*.json
+!sandbox/.gitkeep
+
+# Editors / tooling
+.idea/
+.vscode/
+.claude/
+.DS_Store
