@@ -22,6 +22,7 @@ UI against canned responses with no backend.
 |------|------|
 | `components/Chat.tsx` | Chat container; one `thread_id` per page load |
 | `components/MessageBubble.tsx` | Message rendering |
+| `components/Markdown.tsx` | Renders the Markdown subset the agent emits |
 | `components/ProposalCard.tsx` | Generic key-value card for approval requests |
 | `lib/api.ts` | Single `sendChatMessage()`; mock/real toggle |
 | `lib/types.ts` | Mirrors the backend `/chat` response contract |

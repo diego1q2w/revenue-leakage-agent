@@ -1,10 +1,11 @@
 import type { ChatTurn } from "@/lib/types";
 import ProposalCard from "@/components/ProposalCard";
+import Markdown from "@/components/Markdown";
 
 /** Renders one turn of the conversation. User bubbles are right-aligned;
- * assistant and error bubbles are left-aligned. Markdown-ish assistant text
- * is rendered as plain text with preserved line breaks (whitespace-pre-wrap),
- * per spec. */
+ * assistant and error bubbles are left-aligned. Assistant text is Markdown
+ * (headings, lists, bold, inline code) rendered as React elements; user and
+ * error text stays literal with preserved line breaks. */
 export default function MessageBubble({
   turn,
   onRetry,
@@ -42,7 +43,7 @@ export default function MessageBubble({
   return (
     <div className="flex justify-start">
       <div className="max-w-[80%] rounded-2xl rounded-bl-sm border border-neutral-200 bg-white px-4 py-2 text-sm text-neutral-900 shadow-sm">
-        <p className="whitespace-pre-wrap">{turn.text}</p>
+        <Markdown text={turn.text} />
         {turn.proposal && (
           <>
             <ProposalCard proposal={turn.proposal} />

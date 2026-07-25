@@ -61,7 +61,7 @@ Open http://localhost:3000.
 
 ```sh
 make test                                # backend pytest (71 tests)
-cd frontend && npm test                  # frontend tests (18 tests)
+cd frontend && npm test                  # frontend tests (32 tests)
 make reset-sandbox                       # wipe sandbox ledgers + proposals
 make help                                # all make targets
 ```

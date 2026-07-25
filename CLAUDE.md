@@ -141,7 +141,9 @@ descriptions** — keep them accurate and example-rich when editing.
 - **Entry**: `components/Chat.tsx` — one `thread_id` per page load.
 - **API client**: `lib/api.ts` — single `sendChatMessage()`; mock toggle via
   `NEXT_PUBLIC_MOCK`.
-- **Rendering**: `MessageBubble.tsx`, `ProposalCard.tsx` (generic kv rows).
+- **Rendering**: `MessageBubble.tsx`, `ProposalCard.tsx` (generic kv rows),
+  `Markdown.tsx` + `lib/markdown.ts` (hand-rolled Markdown subset — no
+  dependency, and never `dangerouslySetInnerHTML`).
 - **No** state-management libraries, no streaming, no auth.
 
 Frontend-specific Next.js notes: see `frontend/AGENTS.md`.
